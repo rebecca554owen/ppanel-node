@@ -11,6 +11,7 @@ import (
 	"github.com/sagernet/sing-box/protocol/hysteria2"
 	"github.com/sagernet/sing-box/protocol/shadowsocks"
 	"github.com/sagernet/sing-box/protocol/trojan"
+	"github.com/sagernet/sing-box/protocol/tuic"
 	"github.com/sagernet/sing-box/protocol/vless"
 	"github.com/sagernet/sing-box/protocol/vmess"
 )
@@ -67,6 +68,18 @@ func (b *Sing) AddUsers(p *core.AddUsersParams) (added int, err error) {
 			}
 		}
 		err = in.(*trojan.Inbound).AddUsers(us)
+	case "tuic":
+		us := make([]option.TUICUser, len(p.Users))
+		id := make([]int, len(p.Users))
+		for i := range p.Users {
+			us[i] = option.TUICUser{
+				Name:     p.Users[i].Uuid,
+				UUID:     p.Users[i].Uuid,
+				Password: p.Users[i].Uuid,
+			}
+			id[i] = p.Users[i].Id
+		}
+		err = in.(*tuic.Inbound).AddUsers(us, id)
 	case "hysteria2":
 		us := make([]option.Hysteria2User, len(p.Users))
 		id := make([]int, len(p.Users))

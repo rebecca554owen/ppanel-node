@@ -337,6 +337,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		in.Options = trojanoption
 	case "tuic":
 		in.Type = "tuic"
+		tls.ALPN = append(tls.ALPN, "h3")
 		in.Options = &option.TUICInboundOptions{
 			ListenOptions: listen,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{

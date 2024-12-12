@@ -279,4 +279,4 @@ require (
 
 //replace github.com/sagernet/sing-box v1.10.3 => /root/sing-box_mod
 
-replace github.com/sagernet/sing-box v1.11.0-beta.8 => github.com/wyx2685/sing-box_mod v0.0.0-20241212133024-878cc38401c4
+replace github.com/sagernet/sing-box v1.11.0-beta.8 => github.com/wyx2685/sing-box_mod v0.0.0-20241212191222-4776140f56d1

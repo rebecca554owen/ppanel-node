@@ -984,8 +984,8 @@ github.com/volcengine/volc-sdk-golang v1.0.177 h1:Wzqw3ONLNRelhgxk9qQide+CHGNnOz
 github.com/volcengine/volc-sdk-golang v1.0.177/go.mod h1:u0VtPvlXWpXDTmc9IHkaW1q+5Jjwus4oAqRhNMDRInE=
 github.com/vultr/govultr/v3 v3.9.1 h1:uxSIb8Miel7tqTs3ee+z3t+JelZikwqBBsZzCOPBy/8=
 github.com/vultr/govultr/v3 v3.9.1/go.mod h1:Rd8ebpXm7jxH3MDmhnEs+zrlYW212ouhx+HeUMfHm2o=
-github.com/wyx2685/sing-box_mod v0.0.0-20241212133024-878cc38401c4 h1:Q0ChzYVrA3ioDKpP5nNh54S5HWadq4cjoFJQ3Y1a9tI=
-github.com/wyx2685/sing-box_mod v0.0.0-20241212133024-878cc38401c4/go.mod h1:NZaVp2voW5QtEPwgvei7F3u0e2y8fQQw0lr2IedNrJU=
+github.com/wyx2685/sing-box_mod v0.0.0-20241212191222-4776140f56d1 h1:fQjpKtsO9Gt9qUrlNkPw0lKW+aYxAUQlCM+UJIIwd/A=
+github.com/wyx2685/sing-box_mod v0.0.0-20241212191222-4776140f56d1/go.mod h1:NZaVp2voW5QtEPwgvei7F3u0e2y8fQQw0lr2IedNrJU=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+hCSs=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=
