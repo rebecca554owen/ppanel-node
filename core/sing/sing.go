@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sagernet/sing-box/include"
 	"github.com/sagernet/sing-box/log"
 
 	"github.com/goccy/go-json"
@@ -62,8 +63,11 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 		},
 	}
 	os.Setenv("SING_DNS_PATH", "")
+	ctx := context.Background()
+	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry())
+
 	b, err := box.New(box.Options{
-		Context: context.Background(),
+		Context: ctx,
 		Options: options,
 	})
 	if err != nil {

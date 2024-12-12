@@ -171,7 +171,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 			}
 		}
 		in.Type = "vless"
-		in.Options = option.VLESSInboundOptions{
+		in.Options = &option.VLESSInboundOptions{
 			ListenOptions: listen,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
 				TLS: &tls,
@@ -234,7 +234,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 			}
 		}
 		in.Type = "vmess"
-		in.Options = option.VMessInboundOptions{
+		in.Options = &option.VMessInboundOptions{
 			ListenOptions: listen,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
 				TLS: &tls,
@@ -253,7 +253,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		default:
 			keyLength = 16
 		}
-		ssoption := option.ShadowsocksInboundOptions{
+		ssoption := &option.ShadowsocksInboundOptions{
 			ListenOptions: listen,
 			Method:        info.Common.Shadowsocks.Cipher,
 			Multiplex:     multiplex,
@@ -310,7 +310,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 			t.Type = ""
 		}
 		in.Type = "trojan"
-		trojanoption := option.TrojanInboundOptions{
+		trojanoption := &option.TrojanInboundOptions{
 			ListenOptions: listen,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
 				TLS: &tls,
@@ -337,7 +337,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		in.Options = trojanoption
 	case "tuic":
 		in.Type = "tuic"
-		in.Options = option.TUICInboundOptions{
+		in.Options = &option.TUICInboundOptions{
 			ListenOptions: listen,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
 				TLS: &tls,
@@ -352,7 +352,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 				Password: info.Common.Hysteria2.ObfsPassword,
 			}
 		}
-		in.Options = option.Hysteria2InboundOptions{
+		in.Options = &option.Hysteria2InboundOptions{
 			ListenOptions: listen,
 			Obfs:          obfs,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{

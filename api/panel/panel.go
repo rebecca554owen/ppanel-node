@@ -16,15 +16,15 @@ import (
 // Panel is the interface for different panel's api.
 
 type Client struct {
-	client           *resty.Client
-	APIHost          string
-	Token            string
-	NodeType         string
-	NodeId           int
-	nodeEtag         string
-	userEtag         string
-	UserList         *UserListBody
-	AliveMap         *AliveMap
+	client   *resty.Client
+	APIHost  string
+	Token    string
+	NodeType string
+	NodeId   int
+	nodeEtag string
+	userEtag string
+	UserList *UserListBody
+	AliveMap *AliveMap
 }
 
 func New(c *conf.ApiConfig) (*Client, error) {
@@ -53,7 +53,7 @@ func New(c *conf.ApiConfig) (*Client, error) {
 		"vmess",
 		"trojan",
 		"shadowsocks",
-		"hysteria",
+		"tuic",
 		"hysteria2",
 		"vless":
 	default:
