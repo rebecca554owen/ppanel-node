@@ -4,17 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/goccy/go-json"
-)
-
-// Security type
-const (
-	None    = 0
-	Tls     = 1
-	Reality = 2
 )
 
 type NodeInfo struct {
@@ -30,12 +22,13 @@ type CommonNode struct {
 	Protocol string       `json:"protocol"`
 	//Routes     []Route      `json:"routes"`
 
-	Vless       *VAllssNode      `json:"vless,omitempty"`
-	Vmess       *VAllssNode      `json:"vmess,omitempty"`
-	Shadowsocks *ShadowsocksNode `json:"shadowsocks,omitempty"`
-	Trojan      *TrojanNode      `json:"trojan,omitempty"`
-	Hysteria    *HysteriaNode    `json:"hysteria,omitempty"`
-	Hysteria2   *Hysteria2Node   `json:"hysteria2,omitempty"`
+	Config      json.RawMessage `json:"config"`
+	Vless       *VlessNode
+	Vmess       *VmessNode
+	Shadowsocks *ShadowsocksNode
+	Trojan      *TrojanNode
+	Tuic        *TuicNode
+	Hysteria2   *Hysteria2Node
 }
 
 type BasicConfig struct {
@@ -43,30 +36,38 @@ type BasicConfig struct {
 	PullInterval any `json:"pull_interval"`
 }
 
-// VAllssNode is vmess and vless node info
-type VAllssNode struct {
-	Host              string `json:"host"`
-	Port              int    `json:"port"`
-	Network           string `json:"network"`
-	TransportRAW      string `json:"transport"`
-	Transport         json.RawMessage
-	Security          string `json:"security"`
-	SecurityConfigRAW string `json:"security_config"`
-	SecurityConfig    SecurityConfig
-	// vless only
-	XTLS string `json:"xtls"`
+type SecurityConfig struct {
+	SNI                  string `json:"sni"`
+	AllowInsecure        *bool  `json:"allow_insecure"`
+	Fingerprint          string `json:"fingerprint"`
+	RealityServerAddress string `json:"reality_server_addr"`
+	RealityServerPort    int    `json:"reality_server_port"`
+	RealityPrivateKey    string `json:"reality_private_key"`
+	RealityPublicKey     string `json:"reality_public_key"`
+	RealityShortId       string `json:"reality_short_id"`
 }
 
-type SecurityConfig struct {
-	ServerAddress string `json:"server_address"`
-	ServerName    string `json:"server_name"`
-	ServerPort    int    `json:"server_port"`
-	Fingerprint   string `json:"fingerprint"`
-	ProxyProtocol string `json:"proxy_protocol"`
-	PrivateKey    string `json:"private_key"`
-	PublicKey     string `json:"public_key"`
-	ShortID       string `json:"short_id"`
-	Insecure      bool   `json:"allow_insecure"`
+type TransportConfig struct {
+	Path        string `json:"path"`
+	Host        string `json:"host"`
+	ServiceName string `json:"service_name"`
+}
+
+type VlessNode struct {
+	Port            int              `json:"port"`
+	Flow            string           `json:"flow"`
+	Network         string           `json:"transport"`
+	TransportConfig *TransportConfig `json:"transport_config"`
+	Security        string           `json:"security"`
+	SecurityConfig  *SecurityConfig  `json:"security_config"`
+}
+
+type VmessNode struct {
+	Port            int              `json:"port"`
+	Network         string           `json:"transport"`
+	TransportConfig *TransportConfig `json:"transport_config"`
+	Security        string           `json:"security"`
+	SecurityConfig  *SecurityConfig  `json:"security_config"`
 }
 
 type ShadowsocksNode struct {
@@ -76,31 +77,24 @@ type ShadowsocksNode struct {
 }
 
 type TrojanNode struct {
-	Host           string          `json:"host"`
-	Port           int             `json:"port"`
-	Network        string          `json:"network"`
-	Transport      json.RawMessage `json:"transport"`
-	Security       string          `json:"security"`
-	SecurityConfig SecurityConfig  `json:"security_config"`
+	Port            int              `json:"port"`
+	Network         string           `json:"transport"`
+	TransportConfig *TransportConfig `json:"transport_config"`
+	Security        string           `json:"security"`
+	SecurityConfig  *SecurityConfig  `json:"security_config"`
 }
 
-type HysteriaNode struct {
-	Host       string `json:"host"`
-	Port       int    `json:"port"`
-	ServerName string `json:"server_name"`
-	UpMbps     int    `json:"up_mbps"`
-	DownMbps   int    `json:"down_mbps"`
-	Obfs       string `json:"obfs"`
+type TuicNode struct {
+	Port           int             `json:"port"`
+	SecurityConfig *SecurityConfig `json:"security_config"`
 }
 
 type Hysteria2Node struct {
-	Host         string `json:"host"`
-	Port         int    `json:"port"`
-	ServerName   string `json:"server_name"`
-	UpMbps       int    `json:"up_mbps"`
-	DownMbps     int    `json:"down_mbps"`
-	ObfsType     string `json:"obfs"`
-	ObfsPassword string `json:"obfs-password"`
+	Port           int             `json:"port"`
+	HopPorts       string          `json:"hop_ports"`
+	HopInterval    int             `json:"hop_interval"`
+	ObfsPassword   string          `json:"obfs_password"`
+	SecurityConfig *SecurityConfig `json:"security_config"`
 }
 
 func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
@@ -138,22 +132,36 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("decode node params error: %s", err)
 	}
-
-	if node.Common.Vless != nil {
-		securityConfigJSON := strings.ReplaceAll(node.Common.Vless.SecurityConfigRAW, "\\\"", "\"")
-		securityConfigJSON = strings.Trim(securityConfigJSON, "\"")
-		transportJSON := strings.ReplaceAll(node.Common.Vless.TransportRAW, "\\\"", "\"")
-
-		if err = json.Unmarshal([]byte(securityConfigJSON), &node.Common.Vless.SecurityConfig); err != nil {
-			return nil, fmt.Errorf("Error parsing SecurityConfig: %s", err)
-		}
-		if err = json.Unmarshal([]byte(transportJSON), &node.Common.Vless.Transport); err != nil {
-			return nil, fmt.Errorf("Error parsing Transport: %s", err)
-		}
-	}
 	// set interval
 	node.PushInterval = intervalToTime(node.Common.Basic.PushInterval)
 	node.PullInterval = intervalToTime(node.Common.Basic.PullInterval)
+
+	switch node.Common.Protocol {
+	case "vless":
+		node.Common.Vless = &VlessNode{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Vless)
+	case "vmess":
+		node.Common.Vmess = &VmessNode{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Vmess)
+	case "trojan":
+		node.Common.Trojan = &TrojanNode{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Trojan)
+	case "shadowsocks":
+		node.Common.Shadowsocks = &ShadowsocksNode{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Shadowsocks)
+	case "tuic":
+		node.Common.Tuic = &TuicNode{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Tuic)
+	case "hysteria2":
+		node.Common.Hysteria2 = &Hysteria2Node{}
+		err = json.Unmarshal(node.Common.Config, node.Common.Hysteria2)
+	default:
+		err = fmt.Errorf("unknown protocol:%s", node.Common.Protocol)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("decode node config error: %s", err)
+	}
 
 	return node, nil
 }

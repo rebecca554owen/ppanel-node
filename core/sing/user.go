@@ -27,7 +27,7 @@ func (b *Sing) AddUsers(p *core.AddUsersParams) (added int, err error) {
 			for i := range p.Users {
 				us[i] = option.VLESSUser{
 					Name: p.Users[i].Uuid,
-					Flow: p.Common.Vless.XTLS,
+					Flow: p.Common.Vless.Flow,
 					UUID: p.Users[i].Uuid,
 				}
 			}

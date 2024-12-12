@@ -28,17 +28,17 @@ func (c *Controller) startTasks(node *panel.NodeInfo) {
 	_ = c.userReportPeriodic.Start(false)
 	var security string
 	switch node.Common.Protocol {
-	case "Vless":
+	case "vless":
 		security = node.Common.Vless.Security
-	case "Vmess":
+	case "vmess":
 		security = node.Common.Vmess.Security
-	case "Trojan":
+	case "trojan":
 		security = node.Common.Trojan.Security
-	case "Shadowsocks":
+	case "shadowsocks":
 		security = ""
-	case "Hysteria":
+	case "tuic":
 		security = "tls"
-	case "Hysteria2":
+	case "hysteria2":
 		security = "tls"
 	default:
 		security = ""
@@ -130,22 +130,22 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		// check cert
 		var security string
 		switch newN.Common.Protocol {
-		case "Vless":
+		case "vless":
 			security = newN.Common.Vless.Security
-		case "Vmess":
+		case "vmess":
 			security = newN.Common.Vmess.Security
-		case "Trojan":
+		case "trojan":
 			security = newN.Common.Trojan.Security
-		case "Shadowsocks":
+		case "shadowsocks":
 			security = ""
-		case "Hysteria":
+		case "tuic":
 			security = "tls"
-		case "Hysteria2":
+		case "hysteria2":
 			security = "tls"
 		default:
 			security = ""
 		}
-	
+
 		if security == "tls" {
 			err = c.requestCert()
 			if err != nil {

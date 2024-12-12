@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/goccy/go-json"
 	"github.com/perfect-panel/ppanel-node/api/panel"
@@ -27,37 +26,19 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 	)
 
 	switch nodeInfo.Common.Protocol {
-	case "Vless":
+	case "vless":
 		port = uint16(nodeInfo.Common.Vless.Port)
 		security = nodeInfo.Common.Vless.Security
 		network = nodeInfo.Common.Vless.Network
-	case "Vmess":
+		err = buildVless(option, nodeInfo, in)
+	case "vmess":
 		port = uint16(nodeInfo.Common.Vmess.Port)
 		security = nodeInfo.Common.Vmess.Security
 		network = nodeInfo.Common.Vmess.Network
-	case "Trojan":
+		err = buildVmess(option, nodeInfo, in)
+	case "trojan":
 		port = uint16(nodeInfo.Common.Trojan.Port)
 		security = nodeInfo.Common.Trojan.Security
-	case "Shadowsocks":
-		port = uint16(nodeInfo.Common.Shadowsocks.Port)
-		security = ""
-	case "Hysteria":
-		port = uint16(nodeInfo.Common.Hysteria.Port)
-		security = "tls"
-	case "Hysteria2":
-		port = uint16(nodeInfo.Common.Hysteria2.Port)
-		security = "tls"
-	default:
-		fmt.Println("Unknown protocol:", nodeInfo.Common.Protocol)
-	}
-	switch nodeInfo.Type {
-	case "vless":
-		err = buildV2ray(option, nodeInfo, in)
-		network = nodeInfo.Common.Vless.Network
-	case "vmess":
-		err = buildV2ray(option, nodeInfo, in)
-		network = nodeInfo.Common.Vmess.Network
-	case "trojan":
 		err = buildTrojan(option, nodeInfo, in)
 		if nodeInfo.Common.Trojan.Network != "" {
 			network = nodeInfo.Common.Trojan.Network
@@ -65,11 +46,14 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			network = "tcp"
 		}
 	case "shadowsocks":
+		port = uint16(nodeInfo.Common.Shadowsocks.Port)
+		security = ""
 		err = buildShadowsocks(option, nodeInfo, in)
 		network = "tcp"
 	default:
-		return nil, fmt.Errorf("unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks", nodeInfo.Type)
+		return nil, fmt.Errorf("unsupported node type: %s, Only support: vless, vmess, trojan, shadowsocks", nodeInfo.Common.Protocol)
 	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +96,14 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 				AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol,
 			} //Enable proxy protocol
 		}
+	case "httpupgrade":
+		if in.StreamSetting.HTTPUPGRADESettings != nil {
+			in.StreamSetting.HTTPUPGRADESettings.AcceptProxyProtocol = option.XrayOptions.EnableProxyProtocol
+		} else {
+			in.StreamSetting.HTTPUPGRADESettings = &coreConf.HttpUpgradeConfig{
+				AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol,
+			} //Enable proxy protocol
+		}
 	default:
 		socketConfig := &coreConf.SocketConfig{
 			AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol,
@@ -146,25 +138,25 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 		// Reality
 		in.StreamSetting.Security = "reality"
 		v := nodeInfo.Common.Vless
-		dest := v.SecurityConfig.ServerAddress
+		dest := v.SecurityConfig.RealityServerAddress
 		if dest == "" {
-			dest = v.SecurityConfig.ServerName
+			dest = v.SecurityConfig.SNI
 		}
-		xver, _ := strconv.Atoi(v.SecurityConfig.ProxyProtocol)
+		//xver, _ := strconv.Atoi(v.SecurityConfig.ProxyProtocol)
 
 		d, err := json.Marshal(fmt.Sprintf(
 			"%s:%d",
 			dest,
-			v.SecurityConfig.ServerPort))
+			v.SecurityConfig.RealityServerPort))
 		if err != nil {
 			return nil, fmt.Errorf("marshal reality dest error: %s", err)
 		}
 		in.StreamSetting.REALITYSettings = &coreConf.REALITYConfig{
-			Dest:        d,
-			Xver:        uint64(xver),
-			ServerNames: []string{v.SecurityConfig.ServerName},
-			PrivateKey:  v.SecurityConfig.PrivateKey,
-			ShortIds:    []string{v.SecurityConfig.ShortID},
+			Dest: d,
+			//Xver:        uint64(xver),
+			ServerNames: []string{v.SecurityConfig.SNI},
+			PrivateKey:  v.SecurityConfig.RealityPrivateKey,
+			ShortIds:    []string{v.SecurityConfig.RealityShortId},
 		}
 	default:
 		break
@@ -173,48 +165,35 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 	return in.Build()
 }
 
-func buildV2ray(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreConf.InboundDetourConfig) error {
-	var v *panel.VAllssNode
-	if nodeInfo.Type == "vless" {
-		v = nodeInfo.Common.Vless
-		//Set vless
-		inbound.Protocol = "vless"
-		if config.XrayOptions.EnableFallback {
-			// Set fallback
-			fallbackConfigs, err := buildVlessFallbacks(config.XrayOptions.FallBackConfigs)
-			if err != nil {
-				return err
-			}
-			s, err := json.Marshal(&coreConf.VLessInboundConfig{
-				Decryption: "none",
-				Fallbacks:  fallbackConfigs,
-			})
-			if err != nil {
-				return fmt.Errorf("marshal vless fallback config error: %s", err)
-			}
-			inbound.Settings = (*json.RawMessage)(&s)
-		} else {
-			var err error
-			s, err := json.Marshal(&coreConf.VLessInboundConfig{
-				Decryption: "none",
-			})
-			if err != nil {
-				return fmt.Errorf("marshal vless config error: %s", err)
-			}
-			inbound.Settings = (*json.RawMessage)(&s)
-		}
-	} else {
-		// Set vmess
-		inbound.Protocol = "vmess"
-		v = nodeInfo.Common.Vmess
-		var err error
-		s, err := json.Marshal(&coreConf.VMessInboundConfig{})
+func buildVless(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreConf.InboundDetourConfig) error {
+	v := nodeInfo.Common.Vless
+	//Set vless
+	inbound.Protocol = "vless"
+	if config.XrayOptions.EnableFallback {
+		// Set fallback
+		fallbackConfigs, err := buildVlessFallbacks(config.XrayOptions.FallBackConfigs)
 		if err != nil {
-			return fmt.Errorf("marshal vmess settings error: %s", err)
+			return err
+		}
+		s, err := json.Marshal(&coreConf.VLessInboundConfig{
+			Decryption: "none",
+			Fallbacks:  fallbackConfigs,
+		})
+		if err != nil {
+			return fmt.Errorf("marshal vless fallback config error: %s", err)
+		}
+		inbound.Settings = (*json.RawMessage)(&s)
+	} else {
+		var err error
+		s, err := json.Marshal(&coreConf.VLessInboundConfig{
+			Decryption: "none",
+		})
+		if err != nil {
+			return fmt.Errorf("marshal vless config error: %s", err)
 		}
 		inbound.Settings = (*json.RawMessage)(&s)
 	}
-	if len(v.Transport) == 0 {
+	if v.TransportConfig == nil {
 		return nil
 	}
 
@@ -222,29 +201,56 @@ func buildV2ray(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCon
 	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
 	switch v.Network {
 	case "tcp":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.TCPSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal tcp settings error: %s", err)
-		}
+		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
 	case "ws":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.WSSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal ws settings error: %s", err)
+		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
+			Host: v.TransportConfig.Host,
+			Path: v.TransportConfig.Path,
 		}
 	case "grpc":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.GRPCSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal grpc settings error: %s", err)
+		inbound.StreamSetting.GRPCSettings = &coreConf.GRPCConfig{
+			ServiceName: v.TransportConfig.ServiceName,
 		}
 	case "httpupgrade":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.HTTPUPGRADESettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal httpupgrade settings error: %s", err)
+		inbound.StreamSetting.HTTPUPGRADESettings = &coreConf.HttpUpgradeConfig{
+			Host: v.TransportConfig.Host,
+			Path: v.TransportConfig.Path,
 		}
-	case "splithttp", "xhttp":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.SplitHTTPSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal xhttp settings error: %s", err)
+	default:
+		return errors.New("the network type is not vail")
+	}
+	return nil
+}
+
+func buildVmess(_ *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreConf.InboundDetourConfig) error {
+	v := nodeInfo.Common.Vmess
+	// Set vmess
+	inbound.Protocol = "vmess"
+	var err error
+	s, err := json.Marshal(&coreConf.VMessInboundConfig{})
+	if err != nil {
+		return fmt.Errorf("marshal vmess settings error: %s", err)
+	}
+	inbound.Settings = (*json.RawMessage)(&s)
+
+	t := coreConf.TransportProtocol(v.Network)
+	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
+	switch v.Network {
+	case "tcp":
+		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
+	case "ws":
+		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
+			Host: v.TransportConfig.Host,
+			Path: v.TransportConfig.Path,
+		}
+	case "grpc":
+		inbound.StreamSetting.GRPCSettings = &coreConf.GRPCConfig{
+			ServiceName: v.TransportConfig.ServiceName,
+		}
+	case "httpupgrade":
+		inbound.StreamSetting.HTTPUPGRADESettings = &coreConf.HttpUpgradeConfig{
+			Host: v.TransportConfig.Host,
+			Path: v.TransportConfig.Path,
 		}
 	default:
 		return errors.New("the network type is not vail")
@@ -280,19 +286,15 @@ func buildTrojan(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCo
 	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
 	switch network {
 	case "tcp":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.TCPSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal tcp settings error: %s", err)
-		}
+		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
 	case "ws":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.WSSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal ws settings error: %s", err)
+		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
+			Host: v.TransportConfig.Host,
+			Path: v.TransportConfig.Path,
 		}
 	case "grpc":
-		err := json.Unmarshal(v.Transport, &inbound.StreamSetting.GRPCSettings)
-		if err != nil {
-			return fmt.Errorf("unmarshal grpc settings error: %s", err)
+		inbound.StreamSetting.GRPCSettings = &coreConf.GRPCConfig{
+			ServiceName: v.TransportConfig.ServiceName,
 		}
 	default:
 		return errors.New("the network type is not vail")

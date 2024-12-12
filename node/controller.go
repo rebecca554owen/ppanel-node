@@ -70,17 +70,17 @@ func (c *Controller) Start() error {
 	c.limiter = l
 	var security string
 	switch node.Common.Protocol {
-	case "Vless":
+	case "vless":
 		security = node.Common.Vless.Security
-	case "Vmess":
+	case "vmess":
 		security = node.Common.Vmess.Security
-	case "Trojan":
+	case "trojan":
 		security = node.Common.Trojan.Security
-	case "Shadowsocks":
+	case "shadowsocks":
 		security = ""
-	case "Hysteria":
+	case "tuic":
 		security = "tls"
-	case "Hysteria2":
+	case "hysteria2":
 		security = "tls"
 	default:
 		security = ""
