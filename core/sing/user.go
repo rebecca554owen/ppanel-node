@@ -127,6 +127,8 @@ func (b *Sing) DelUsers(users []panel.UserInfo, tag string) error {
 			del = i.(*shadowsocks.MultiInbound)
 		case "trojan":
 			del = i.(*trojan.Inbound)
+		case "tuic":
+			del = i.(*tuic.Inbound)
 		case "hysteria2":
 			del = i.(*hysteria2.Inbound)
 		}
