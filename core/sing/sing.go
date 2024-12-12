@@ -28,7 +28,7 @@ type Sing struct {
 	hookServer *HookServer
 	router     adapter.Router
 	logFactory log.Factory
-	inbounds   map[string]adapter.Inbound
+	//inbounds   map[string]adapter.Inbound
 }
 
 func init() {
@@ -69,15 +69,15 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 	if err != nil {
 		return nil, err
 	}
-	hs := NewHookServer(b.Router().GetCtx(), c.SingConfig.EnableConnClear)
-	b.Router().SetClashServer(hs)
+	hs := NewHookServer(c.SingConfig.EnableConnClear)
+	b.Router().SetTracker(hs)
 	return &Sing{
 		ctx:        b.Router().GetCtx(),
 		box:        b,
 		hookServer: hs,
 		router:     b.Router(),
 		logFactory: b.LogFactory(),
-		inbounds:   make(map[string]adapter.Inbound),
+		//inbounds:   make(map[string]adapter.Inbound),
 	}, nil
 }
 
