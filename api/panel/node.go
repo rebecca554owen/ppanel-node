@@ -20,7 +20,6 @@ type NodeInfo struct {
 type CommonNode struct {
 	Basic    *BasicConfig `json:"basic"`
 	Protocol string       `json:"protocol"`
-	//Routes     []Route      `json:"routes"`
 
 	Config      json.RawMessage `json:"config"`
 	Vless       *VlessNode

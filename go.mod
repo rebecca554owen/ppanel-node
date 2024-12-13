@@ -13,10 +13,10 @@ require (
 	github.com/hashicorp/go-multierror v1.1.2-0.20240618221538-6fa16eae919d
 	github.com/juju/ratelimit v1.0.2
 	github.com/sagernet/sing v0.6.0-beta.6
-	github.com/sagernet/sing-box v1.11.0-beta.8
+	github.com/sagernet/sing-box v1.10.4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
-	github.com/xtls/xray-core v1.8.25-0.20241207144338-9cb6816383dd
+	github.com/xtls/xray-core v1.8.25-0.20241212121918-7463561856f7
 	golang.org/x/crypto v0.30.0
 	golang.org/x/sys v0.28.0
 	google.golang.org/protobuf v1.35.2
@@ -196,7 +196,6 @@ require (
 	github.com/sagernet/netlink v0.0.0-20240612041022-b9a21c07ac6a // indirect
 	github.com/sagernet/nftables v0.3.0-beta.4 // indirect
 	github.com/sagernet/quic-go v0.48.2-beta.1 // indirect
-	github.com/sagernet/reality v0.0.0-20230406110435-ee17307e7691 // indirect
 	github.com/sagernet/sing-dns v0.4.0-beta.1 // indirect
 	github.com/sagernet/sing-mux v0.3.0-alpha.1 // indirect
 	github.com/sagernet/sing-quic v0.4.0-alpha.4 // indirect
@@ -239,6 +238,7 @@ require (
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/volcengine/volc-sdk-golang v1.0.177 // indirect
 	github.com/vultr/govultr/v3 v3.9.1 // indirect
+	github.com/wyx2685/sing-vmess v0.0.0-20241213093025-7de21a950272 // indirect
 	github.com/xtls/reality v0.0.0-20240909153216-e26ae2305463 // indirect
 	github.com/yandex-cloud/go-genproto v0.0.0-20240911120709-1fa0cb6f47c2 // indirect
 	github.com/yandex-cloud/go-sdk v0.0.0-20240911121212-e4e74d0d02f5 // indirect
@@ -279,4 +279,4 @@ require (
 
 //replace github.com/sagernet/sing-box v1.10.3 => /root/sing-box_mod
 
-replace github.com/sagernet/sing-box v1.11.0-beta.8 => github.com/wyx2685/sing-box_mod v0.0.0-20241212191222-4776140f56d1
+replace github.com/sagernet/sing-box v1.10.4 => github.com/wyx2685/sing-box_mod v0.0.0-20241213112838-c7faac61b3fe

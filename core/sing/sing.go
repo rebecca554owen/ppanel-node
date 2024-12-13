@@ -8,12 +8,12 @@ import (
 	"github.com/sagernet/sing-box/include"
 	"github.com/sagernet/sing-box/log"
 
-	"github.com/goccy/go-json"
 	"github.com/perfect-panel/ppanel-node/conf"
 	vCore "github.com/perfect-panel/ppanel-node/core"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/option"
+	"github.com/sagernet/sing/common/json"
 )
 
 var _ vCore.Core = (*Sing)(nil)
@@ -29,7 +29,6 @@ type Sing struct {
 	hookServer *HookServer
 	router     adapter.Router
 	logFactory log.Factory
-	//inbounds   map[string]adapter.Inbound
 }
 
 func init() {
@@ -37,13 +36,15 @@ func init() {
 }
 
 func New(c *conf.CoreConfig) (vCore.Core, error) {
+	ctx := context.Background()
+	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry())
 	options := option.Options{}
 	if len(c.SingConfig.OriginalPath) != 0 {
 		data, err := os.ReadFile(c.SingConfig.OriginalPath)
 		if err != nil {
 			return nil, fmt.Errorf("read original config error: %s", err)
 		}
-		err = json.Unmarshal(data, &options)
+		options, err = json.UnmarshalExtendedContext[option.Options](ctx, data)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal original config error: %s", err)
 		}
@@ -63,9 +64,6 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 		},
 	}
 	os.Setenv("SING_DNS_PATH", "")
-	ctx := context.Background()
-	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry())
-
 	b, err := box.New(box.Options{
 		Context: ctx,
 		Options: options,
@@ -81,7 +79,6 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 		hookServer: hs,
 		router:     b.Router(),
 		logFactory: b.LogFactory(),
-		//inbounds:   make(map[string]adapter.Inbound),
 	}, nil
 }
 
