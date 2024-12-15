@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/beevik/ntp v1.4.3
-	github.com/fsnotify/fsnotify v1.7.0
+	github.com/fsnotify/fsnotify v1.8.0
 	github.com/go-acme/lego/v4 v4.20.4
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/goccy/go-json v0.10.3
