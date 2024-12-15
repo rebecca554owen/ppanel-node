@@ -8,7 +8,7 @@ require (
 	github.com/beevik/ntp v1.4.3
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/go-acme/lego/v4 v4.20.4
-	github.com/go-resty/resty/v2 v2.15.3
+	github.com/go-resty/resty/v2 v2.16.2
 	github.com/goccy/go-json v0.10.3
 	github.com/hashicorp/go-multierror v1.1.2-0.20240618221538-6fa16eae919d
 	github.com/juju/ratelimit v1.0.2
