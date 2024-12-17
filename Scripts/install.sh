@@ -538,14 +538,28 @@ install_PPanel-node() {
 
     curl -o /usr/bin/ppnode -Ls https://raw.githubusercontent.com/wyx2685/ppanel-node/master/Scripts/ppnode.sh
     chmod +x /usr/bin/ppnode
-    if [ ! -L /usr/bin/PPnode ]; then
-        ln -s /usr/bin/PPnode /usr/bin/ppnode
-        chmod +x /usr/bin/PPnode
-    fi
 
     cd $cur_dir
     rm -f install.sh
-
+    echo -e ""
+    echo "PPanel-node 管理脚本使用方法: "
+    echo "------------------------------------------"
+    echo "ppnode              - 显示管理菜单 (功能更多)"
+    echo "ppnode start        - 启动 PPanel-node"
+    echo "ppnode stop         - 停止 PPanel-node"
+    echo "ppnode restart      - 重启 PPanel-node"
+    echo "ppnode status       - 查看 PPanel-node 状态"
+    echo "ppnode enable       - 设置 PPanel-node 开机自启"
+    echo "ppnode disable      - 取消 PPanel-node 开机自启"
+    echo "ppnode log          - 查看 PPanel-node 日志"
+    echo "ppnode x25519       - 生成 x25519 密钥"
+    echo "ppnode generate     - 生成 PPanel-node 配置文件"
+    echo "ppnode update       - 更新 PPanel-node"
+    echo "ppnode update x.x.x - 安装 PPanel-node 指定版本"
+    echo "ppnode install      - 安装 PPanel-node"
+    echo "ppnode uninstall    - 卸载 PPanel-node"
+    echo "ppnode version      - 查看 PPanel-node 版本"
+    echo "------------------------------------------"
     # 首次安装询问是否生成配置文件
     if [[ $first_install == true ]]; then
         read -rp "检测到你为第一次安装PPanel-node,是否自动直接生成配置文件？(y/n): " if_generate
