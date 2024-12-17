@@ -16,8 +16,8 @@ require (
 	github.com/sagernet/sing-box v1.10.4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
-	github.com/xtls/xray-core v1.8.25-0.20241212121918-7463561856f7
-	golang.org/x/crypto v0.30.0
+	github.com/xtls/xray-core v1.8.25-0.20241217085316-5836afc41f78
+	golang.org/x/crypto v0.31.0
 	golang.org/x/sys v0.28.0
 	google.golang.org/protobuf v1.35.2
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1

@@ -1015,6 +1015,8 @@ github.com/xtls/reality v0.0.0-20240909153216-e26ae2305463 h1:g1Cj7d+my6k/HHxLAy
 github.com/xtls/reality v0.0.0-20240909153216-e26ae2305463/go.mod h1:BjIOLmkEEtAgloAiVUcYj0Mt+YU00JARZw8AEU0IwAg=
 github.com/xtls/xray-core v1.8.25-0.20241212121918-7463561856f7 h1:H1793FyHWPvU5RTTbBC0VR5ICt5D7RTY7BYs01KoQq0=
 github.com/xtls/xray-core v1.8.25-0.20241212121918-7463561856f7/go.mod h1:lduNPDkXku+Avphl8g7W0yJrHhWyxdOnPo0XGYdF0Aw=
+github.com/xtls/xray-core v1.8.25-0.20241217085316-5836afc41f78 h1:iF8tLatbPxcbtJ3sjzypxJdT2UZV1G1C5x2HEinQ/ww=
+github.com/xtls/xray-core v1.8.25-0.20241217085316-5836afc41f78/go.mod h1:lduNPDkXku+Avphl8g7W0yJrHhWyxdOnPo0XGYdF0Aw=
 github.com/yandex-cloud/go-genproto v0.0.0-20241101135610-76a0cfc1a773 h1:xkWrnYFWxiwCKVbmuOEMR030UCFklpglmOcPv9yJz2c=
 github.com/yandex-cloud/go-genproto v0.0.0-20241101135610-76a0cfc1a773/go.mod h1:0LDD/IZLIUIV4iPH+YcF+jysO3jkSvADFGm4dCAuwQo=
 github.com/yandex-cloud/go-sdk v0.0.0-20241101143304-947cf519f6bd h1:LcA5pQoWjS2hhG6bV2ZL9eBEV2wLSVbM2KcpDphYP/w=
@@ -1107,8 +1109,8 @@ golang.org/x/crypto v0.11.0/go.mod h1:xgJhtzW8F9jGdVFWZESrid1U1bjeNy4zgy5cRr/CIi
 golang.org/x/crypto v0.17.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
 golang.org/x/crypto v0.19.0/go.mod h1:Iy9bg/ha4yyC70EfRS8jz+B6ybOBKMaSxLj6P6oBDfU=
 golang.org/x/crypto v0.23.0/go.mod h1:CKFgDieR+mRhux2Lsu27y0fO304Db0wZe70UKqHu0v8=
-golang.org/x/crypto v0.30.0 h1:RwoQn3GkWiMkzlX562cLB7OxWvjH1L8xutO2WoJcRoY=
-golang.org/x/crypto v0.30.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
+golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
+golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
 golang.org/x/exp v0.0.0-20180321215751-8460e604b9de/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20180807140117-3d87b88a115f/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
