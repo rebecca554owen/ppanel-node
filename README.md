@@ -8,7 +8,7 @@ A PPanel node server based on multi core, modified from V2bX.
 ### 一键安装
 
 ```
-暂无
+wget -N https://raw.githubusercontent.com/wyx2685/ppanel-node/master/Scripts/install.sh && bash install.sh
 ```
 
 ## 构建

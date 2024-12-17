@@ -8,7 +8,7 @@ on:
       - 'develop'
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/node
+  IMAGE_NAME: ${{ github.repository_owner }}/ppnode
 
 jobs:
   build:

@@ -509,7 +509,7 @@ install_PPanel-node() {
     chmod +x ppnode
     mkdir /etc/PPanel-node/ -p
     rm /etc/systemd/system/PPanel-node.service -f
-    file="https://github.com/wyx2685/PPanel-node/raw/master/Scripts/PPanel-node.service"
+    file="https://raw.githubusercontent.com/wyx2685/ppanel-node/master/Scripts/PPanel-node.service"
     wget -q -N --no-check-certificate -O /etc/systemd/system/PPanel-node.service ${file}
     systemctl daemon-reload
     systemctl stop PPanel-node
