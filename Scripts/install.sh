@@ -168,7 +168,7 @@ add_node_config() {
 
     if [ "$NodeType" == "vless" ]; then
         read -rp "请选择是否为reality节点？(y/n)" isreality
-    elif [ "$NodeType" == "hysteria2" || "$NodeType" == "tuic" || "$NodeType" == "trojan" ]; then
+    elif [[ "$NodeType" == "hysteria2" || "$NodeType" == "tuic" || "$NodeType" == "trojan" ]]; then
         istls="y"
     fi
 
@@ -537,7 +537,7 @@ install_PPanel-node() {
     fi
 
     cd $cur_dir
-    rm -f ppnode.sh
+    rm -f install.sh
 
     # 首次安装询问是否生成配置文件
     if [[ $first_install == true ]]; then
