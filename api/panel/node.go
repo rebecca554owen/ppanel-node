@@ -96,6 +96,20 @@ type Hysteria2Node struct {
 	SecurityConfig *SecurityConfig `json:"security_config"`
 }
 
+type ServerPushStatusRequest struct {
+	Cpu       float64 `json:"cpu"`
+	Mem       float64 `json:"mem"`
+	Disk      float64 `json:"disk"`
+	UpdatedAt int64   `json:"updated_at"`
+}
+
+type NodeStatus struct {
+	CPU    float64
+	Mem    float64
+	Disk   float64
+	Uptime uint64
+}
+
 func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 	const path = "/v1/server/config"
 	r, err := c.client.
@@ -177,4 +191,18 @@ func intervalToTime(i interface{}) time.Duration {
 	default:
 		return time.Duration(reflect.ValueOf(i).Int()) * time.Second
 	}
+}
+
+func (c *Client) ReportNodeStatus(nodeStatus *NodeStatus) (err error) {
+	path := "/v1/server/status"
+	status := ServerPushStatusRequest{
+		Cpu:       nodeStatus.CPU,
+		Mem:       nodeStatus.Mem,
+		Disk:      nodeStatus.Disk,
+		UpdatedAt: time.Now().UnixMilli(),
+	}
+	if _, err = c.client.R().SetBody(status).ForceContentType("application/json").Post(path); err != nil {
+		return fmt.Errorf("request %s failed: %v", c.assembleURL(path), err.Error())
+	}
+	return nil
 }

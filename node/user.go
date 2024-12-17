@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/perfect-panel/ppanel-node/api/panel"
+	"github.com/perfect-panel/ppanel-node/common/serverstatus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -51,12 +52,7 @@ func (c *Controller) reportUserTrafficTask() (err error) {
 				result = append(result, online)
 			}
 		}
-		data := make(map[int][]string)
-		for _, onlineuser := range result {
-			// json structure: { UID1:["ip1","ip2"],UID2:["ip3","ip4"] }
-			data[onlineuser.UID] = append(data[onlineuser.UID], onlineuser.IP)
-		}
-		if err = c.apiClient.ReportNodeOnlineUsers(&data); err != nil {
+		if err = c.apiClient.ReportNodeOnlineUsers(&result); err != nil {
 			log.WithFields(log.Fields{
 				"tag": c.tag,
 				"err": err,
@@ -64,6 +60,21 @@ func (c *Controller) reportUserTrafficTask() (err error) {
 		} else {
 			log.WithField("tag", c.tag).Infof("Total %d online users, %d Reported", len(*onlineDevice), len(result))
 		}
+	}
+
+	CPU, Mem, Disk, Uptime, err := serverstatus.GetSystemInfo()
+	if err != nil {
+		log.Print(err)
+	}
+	err = c.apiClient.ReportNodeStatus(
+		&panel.NodeStatus{
+			CPU:    CPU,
+			Mem:    Mem,
+			Disk:   Disk,
+			Uptime: Uptime,
+		})
+	if err != nil {
+		log.Print(err)
 	}
 
 	userTraffic = nil

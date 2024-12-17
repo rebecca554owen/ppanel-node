@@ -23,6 +23,10 @@ type UserListBody struct {
 	Users []UserInfo `json:"users"`
 }
 
+type UserOnlineBody struct {
+	Users []OnlineUser `json:"users"`
+}
+
 type AliveMap struct {
 	Alive map[int]int `json:"alive"`
 }
@@ -57,7 +61,8 @@ func (c *Client) GetUserList() ([]UserInfo, error) {
 // GetUserAlive will fetch the alive_ip count for users
 func (c *Client) GetUserAlive() (map[int]int, error) {
 	c.AliveMap = &AliveMap{}
-	const path = "/v1/server/alivelist"
+	c.AliveMap.Alive = make(map[int]int)
+	/*const path = "/v1/server/alivelist"
 	r, err := c.client.R().
 		ForceContentType("application/json").
 		Get(path)
@@ -73,7 +78,7 @@ func (c *Client) GetUserAlive() (map[int]int, error) {
 		//fmt.Printf("unmarshal user alive list error: %s", err)
 		c.AliveMap.Alive = make(map[int]int)
 	}
-
+	*/
 	return c.AliveMap.Alive, nil
 }
 
@@ -101,10 +106,13 @@ func (c *Client) ReportUserTraffic(userTraffic []UserTraffic) error {
 	return nil
 }
 
-func (c *Client) ReportNodeOnlineUsers(data *map[int][]string) error {
-	const path = "/v1/server/alive"
+func (c *Client) ReportNodeOnlineUsers(data *[]OnlineUser) error {
+	const path = "/v1/server/online"
+	users := UserOnlineBody{
+		Users: *data,
+	}
 	r, err := c.client.R().
-		SetBody(data).
+		SetBody(users).
 		ForceContentType("application/json").
 		Post(path)
 	err = c.checkResponse(r, path, err)
