@@ -124,7 +124,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		switch v.Network {
 		case "tcp":
 			t.Type = ""
-		case "ws":
+		case "ws", "websocket":
 			var (
 				path    string
 				ed      int
@@ -187,7 +187,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		switch v.Network {
 		case "tcp":
 			t.Type = ""
-		case "ws":
+		case "ws", "websocket":
 			var (
 				path    string
 				ed      int
@@ -277,7 +277,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		switch v.Network {
 		case "tcp":
 			t.Type = ""
-		case "ws":
+		case "ws", "websocket":
 			var (
 				path    string
 				ed      int

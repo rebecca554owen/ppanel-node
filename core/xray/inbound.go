@@ -88,7 +88,7 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			} //Enable proxy protocol
 			in.StreamSetting.TCPSettings = tcpSetting
 		}
-	case "ws":
+	case "ws", "websocket":
 		if in.StreamSetting.WSSettings != nil {
 			in.StreamSetting.WSSettings.AcceptProxyProtocol = option.XrayOptions.EnableProxyProtocol
 		} else {
@@ -202,7 +202,7 @@ func buildVless(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCon
 	switch v.Network {
 	case "tcp":
 		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
-	case "ws":
+	case "ws", "websocket":
 		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
 			Host: v.TransportConfig.Host,
 			Path: v.TransportConfig.Path,
@@ -238,7 +238,7 @@ func buildVmess(_ *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreConf.Inb
 	switch v.Network {
 	case "tcp":
 		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
-	case "ws":
+	case "ws", "websocket":
 		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
 			Host: v.TransportConfig.Host,
 			Path: v.TransportConfig.Path,
@@ -287,7 +287,7 @@ func buildTrojan(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCo
 	switch network {
 	case "tcp":
 		inbound.StreamSetting.TCPSettings = &coreConf.TCPConfig{}
-	case "ws":
+	case "ws", "websocket":
 		inbound.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
 			Host: v.TransportConfig.Host,
 			Path: v.TransportConfig.Path,
