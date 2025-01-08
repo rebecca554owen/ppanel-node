@@ -24,7 +24,7 @@ func (c *Controller) reportUserTrafficTask() (err error) {
 		}
 	}
 	if len(userTraffic) > 0 {
-		err = c.apiClient.ReportUserTraffic(userTraffic)
+		err = c.apiClient.ReportUserTraffic(&userTraffic)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"tag": c.tag,

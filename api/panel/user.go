@@ -82,21 +82,32 @@ func (c *Client) GetUserAlive() (map[int]int, error) {
 	return c.AliveMap.Alive, nil
 }
 
+type ServerPushUserTrafficRequest struct {
+	Traffic []UserTraffic `json:"traffic"`
+}
+
 type UserTraffic struct {
-	UID      int
-	Upload   int64
-	Download int64
+	UID      int   `json:"uid"`
+	Upload   int64 `json:"upload"`
+	Download int64 `json:"download"`
 }
 
 // ReportUserTraffic reports the user traffic
-func (c *Client) ReportUserTraffic(userTraffic []UserTraffic) error {
-	data := make(map[int][]int64, len(userTraffic))
-	for i := range userTraffic {
-		data[userTraffic[i].UID] = []int64{userTraffic[i].Upload, userTraffic[i].Download}
+func (c *Client) ReportUserTraffic(userTraffic *[]UserTraffic) error {
+	traffic := make([]UserTraffic, 0)
+	for _, t := range *userTraffic {
+		traffic = append(traffic, UserTraffic{
+			UID:      t.UID,
+			Upload:   t.Upload,
+			Download: t.Download,
+		})
 	}
-	const path = "/v1/server/push"
+	path := "/v1/server/push"
+	req := ServerPushUserTrafficRequest{
+		Traffic: traffic,
+	}
 	r, err := c.client.R().
-		SetBody(data).
+		SetBody(req).
 		ForceContentType("application/json").
 		Post(path)
 	err = c.checkResponse(r, path, err)
