@@ -38,7 +38,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		servername = info.Common.Vmess.SecurityConfig.SNI
 	case "trojan":
 		port = uint16(info.Common.Trojan.Port)
-		security = info.Common.Trojan.Security
+		security = "tls"
 		servername = info.Common.Trojan.SecurityConfig.SNI
 	case "shadowsocks":
 		port = uint16(info.Common.Shadowsocks.Port)
